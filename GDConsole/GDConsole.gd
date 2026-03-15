@@ -68,42 +68,45 @@ func _input(p_event: InputEvent) -> void:
 	
 	var input_handled: bool = true
 	
-	match p_event.physical_keycode:
-		
-		KEY_QUOTELEFT:
-			visible = not visible
-		
-		KEY_PAGEUP:
-			var scroll_bar: VScrollBar = _console_output.get_v_scroll_bar()
-			scroll_bar.value -= scroll_bar.page
-		
-		KEY_PAGEDOWN:
-			var scroll_bar: VScrollBar = _console_output.get_v_scroll_bar()
-			scroll_bar.value += scroll_bar.page
-		
-		KEY_UP:
-			if _history.is_empty():
-				return
+	if p_event.is_action_pressed(&"debug_gd_console"):
+		visible = not visible
+	else:
+		match p_event.physical_keycode:
 			
-			_history_index = clampi(_history_index + 1, 0, _history.size() - 1)
-			_console_input.text = _history[_history_index]
-			_console_input.caret_column = _console_input.text.length()
-		
-		KEY_DOWN:
-			if _history.is_empty():
-				return
+			#KEY_QUOTELEFT:
+			#	visible = not visible
 			
-			_history_index = clampi(_history_index - 1, 0, _history.size() - 1)
-			_console_input.text = _history[_history_index]
-			_console_input.caret_column = _console_input.text.length()
-		
-		KEY_TAB:
-			_autocomplete()
-			_last_input_was_autocomplete = true
-		
-		_:
-			_last_input_was_autocomplete = false
-			input_handled = false
+			KEY_PAGEUP:
+				var scroll_bar: VScrollBar = _console_output.get_v_scroll_bar()
+				scroll_bar.value -= scroll_bar.page
+			
+			KEY_PAGEDOWN:
+				var scroll_bar: VScrollBar = _console_output.get_v_scroll_bar()
+				scroll_bar.value += scroll_bar.page
+			
+			KEY_UP:
+				if _history.is_empty():
+					return
+				
+				_history_index = clampi(_history_index + 1, 0, _history.size() - 1)
+				_console_input.text = _history[_history_index]
+				_console_input.caret_column = _console_input.text.length()
+			
+			KEY_DOWN:
+				if _history.is_empty():
+					return
+				
+				_history_index = clampi(_history_index - 1, 0, _history.size() - 1)
+				_console_input.text = _history[_history_index]
+				_console_input.caret_column = _console_input.text.length()
+			
+			KEY_TAB:
+				_autocomplete()
+				_last_input_was_autocomplete = true
+			
+			_:
+				_last_input_was_autocomplete = false
+				input_handled = false
 	
 	if input_handled:
 		get_viewport().set_input_as_handled()

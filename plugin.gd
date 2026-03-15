@@ -85,10 +85,12 @@ func _add_project_settings() -> void:
 		type = TYPE_STRING,
 	})
 	
+	_add_actions()
+	
 	var error: int = ProjectSettings.save()
 	
 	if not error == OK:
-		push_error("GDConsole - error %s while saving project settings." % error_string(error))
+		push_error("GodotDebugTools - error %s while saving project settings." % error_string(error))
 
 func _remove_project_settings() -> void:
 	
@@ -107,3 +109,30 @@ func _remove_project_settings() -> void:
 			
 			if not error == OK:
 				push_error("GDConsole - error %s while saving project settings." % error_string(error))
+
+static func _util_mouse_button(button_index: int) -> InputEventMouseButton:
+	var ev := InputEventMouseButton.new()
+	ev.button_index = button_index
+	return ev
+
+static func _util_key(keycode: int) -> InputEventKey:
+	var ev := InputEventKey.new()
+	ev.keycode = keycode
+	return ev
+
+func _add_actions() -> void:
+	
+	var actions: Dictionary = {
+		"debug_action": _util_mouse_button(MOUSE_BUTTON_XBUTTON2),
+		"debug_scroll_up": _util_mouse_button(MOUSE_BUTTON_WHEEL_UP),
+		"debug_scroll_down": _util_mouse_button(MOUSE_BUTTON_WHEEL_DOWN),
+		"debug_menu": _util_key(KEY_F3),
+		"debug_gd_console": _util_key(KEY_QUOTELEFT),
+		"debug_gameplay_debugger": _util_key(KEY_APOSTROPHE)
+	}
+	for action_name in actions:
+		if not ProjectSettings.has_setting("input/" + action_name):
+			ProjectSettings.set_setting("input/" + action_name, {
+				"deadzone": 0.2,
+				"events": [ actions[action_name] ]
+			})
